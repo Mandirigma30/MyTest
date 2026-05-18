@@ -24,6 +24,32 @@ What should be done in the next session.
 ---
 
 ---
+### [2026-05-18] — Command Center Module & Global UI Component Library
+**Status:** Complete
+
+**Components Built / Modified:**
+- `src/components/common/Button.jsx` — [NEW] Reusable Button (variants: primary, secondary, danger, ghost; sizes: sm, md, lg; loading state spinner).
+- `src/components/common/Input.jsx` — [NEW] Reusable Input field (blue glow on focus, error/hint states, left/right icon slots).
+- `src/components/common/Select.jsx` — [NEW] Reusable Select dropdown (custom chevron, focus glow, error states).
+- `src/components/common/Card.jsx` — [NEW] Reusable Card container (tonal elevation, left severity-border accent, Header/Body/Footer sub-components).
+- `src/components/command-center/CommandCenter.jsx` — [NEW] Command Center desktop dashboard with live incident grid, Auto-Triage Severity Score (1–5), severity filters, and live clock.
+- `src/components/command-center/AuthKeyModal.jsx` — [NEW] Sliding sidebar modal for Auth Key generation (Responder ID input, expiry selector, copyable key output).
+- `src/App.jsx` — Updated to render CommandCenter as root view.
+- `src/main.jsx` — Verified React 18 entry point.
+- `src/index.css` — Updated with Hanken Grotesk + JetBrains Mono fonts and custom dark scrollbar.
+
+**Summary:**
+Joined the RespondaCare project. Read PROJECT_OVERVIEW.md and UPDATE_LOG.md. Built the global `src/components/common/` library (Button, Input, Select, Card) aligned to the RespondaCare Command Center design system (dark mode, #1e3fae primary, JetBrains Mono for data labels). Built the Command Center module: a desktop dashboard showing 6 mock active emergencies sorted by severity, each with an Auto-Triage Severity Score badge (1=Minimal green → 5=Critical pulsing red), status chips, elapsed timer, and Dispatch/View Detail actions. The Auth Key modal generates cryptographic-style tokens (format: RESP-XXXX-XXXX-XXXX) with responder ID binding and expiry selection (1h/4h/8h/24h), with clipboard copy support. All components use the Stitch-defined design tokens. UI fully verified via dev server.
+
+**Next Logical Step:**
+1. Install `react-router-dom` and wire multi-page routing (Login → Command Center).
+2. Connect Command Center to real Supabase incidents table with RLS-gated queries.
+3. Replace mock emergencies with live `supabase.from('incidents').select(*)` subscriptions.
+4. Implement real Auth Key generation via Supabase Edge Function with JWT signing.
+5. Wire `Button` / `Input` / `Select` / `Card` into LoginScreen.jsx to replace inline styles.
+---
+
+---
 ### [2026-04-15] — Dev Server Run & Documentation Review
 **Status:** In Progress
 
