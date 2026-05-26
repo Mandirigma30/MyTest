@@ -24,6 +24,34 @@ What should be done in the next session.
 ---
 
 ---
+### [2026-05-26] — Unified Incident Report (UIR) Module
+**Status:** Complete
+
+**Components Built / Modified:**
+- `src/components/uir/UnifiedIncidentReport.jsx` — [NEW] Comprehensive mobile-responsive Unified Incident Report form with four collapsible accordion sections: A) Response Outcome, B) Patient Assessment, C) Patient Disposition, D) Health Profile Update Flag. Uses all global reusable components (`Button`, `Input`, `Select`, `Card`). Includes GCS auto-calculator, conditional field rendering (transport details, AMA refusal witness), animated submission sync queue, and an Export PDF placeholder button.
+- `src/pages/UIRPage.jsx` — [NEW] Mobile-viewport-constrained page wrapper following the established ScannerPage.jsx pattern with sticky header, back navigation, logout button, and RA 10173 compliance footer.
+- `src/App.jsx` — [MODIFY] Registered the new `/uir` route mapping.
+- `UPDATE_LOG.md` — [MODIFY] Appended new development session entry.
+
+**Summary:**
+Built the full Unified Incident Report (UIR) module — a comprehensive, long-form clinical report designed for mobile paramedic use. The form is divided into four major sections using collapsible accordions for ergonomic scrolling:
+
+- **Section A — Response Outcome:** Incident timing (dispatch, on-scene, clear), location/barangay, responder ID and unit call sign, nature of call, incident type, severity score (1–5), response outcome, and narrative summary.
+- **Section B — Patient Assessment:** Demographics (name, age, sex, weight, emergency contact), chief complaint & HPI with OPQRST, full vital signs (BP, pulse, RR, SpO2, temp, glucose, GCS with auto-computed E+V+M total), physical examination using ABCDE methodology (airway, breathing, circulation, skin, LOC, pupil response), interventions & treatment (medications, IV access, oxygen therapy, immobilization), and detailed clinical narrative.
+- **Section C — Patient Disposition:** Disposition selector with conditional rendering for transport details (receiving facility, provider, transport mode, departure/arrival times) and AMA refusal documentation with legal warning banner and witness recording.
+- **Section D — Health Profile Update Flag:** Toggle-activated section for flagging newly discovered allergies, medications, or conditions for Barangay Health Worker review — queued for `health.profiles` schema updates.
+
+All form fields use the global `Button`, `Input`, `Select`, and `Card` components from `src/components/common/`. The Export PDF button is implemented as a placeholder for future jsPDF or server-side PDF generation. The submission pipeline simulates encrypted local cache writes and Supabase emergency schema sync.
+
+**Next Logical Step:**
+1. Wire UIR submission to live Supabase `emergency.patient_care_reports`, `emergency.incidents`, and `emergency.vital_signs` tables using the existing multi-table transaction pattern from SAMPLEViewer.
+2. Implement the Export PDF feature using jsPDF with RA 10173 header stamps and encrypted metadata.
+3. Add a navigation link to the UIR from the ScannerPage or Dashboard for quick access after patient QR scan.
+4. Connect the Health Profile Update Flag to trigger BHW notification queues in the `health.profiles` schema.
+
+---
+
+---
 ### [2026-05-25] — BHW Resident Enrollment Module & Multi-Schema Integration
 **Status:** Complete
 
