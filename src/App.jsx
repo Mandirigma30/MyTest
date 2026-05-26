@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ScannerPage from './pages/ScannerPage';
 import EnrollPage from './pages/EnrollPage';
+import UIRPage from './pages/UIRPage';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/scanner" element={<ScannerPage />} />
         <Route path="/enroll" element={<EnrollPage />} />
+        <Route path="/uir" element={<UIRPage />} />
         
         {/* Fallback secure redirect */}
         <Route path="*" element={<Navigate to="/login" replace />} />
