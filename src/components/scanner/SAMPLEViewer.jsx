@@ -136,14 +136,14 @@ export default function SAMPLEViewer({ patient, onReset }) {
           .select();
 
         if (pcrError) throw pcrError;
-        const reportId = pcrData[0].report_id;
+        const reportId = pcrData[0].pcr_id;
 
         // C. Insert into emergency.vital_signs
         const { error: vitError } = await supabase
           .from('vital_signs')
           .insert([
             {
-              report_id: reportId,
+              pcr_id: reportId,
               observation_time: new Date().toISOString(),
               pulse_rate: pulseRate,
               respiratory_rate: respiratoryRate,
