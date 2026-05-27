@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../common/Button';
 import Input from '../common/Input';
 import Select from '../common/Select';
@@ -121,9 +122,28 @@ function LiveClock() {
 }
 
 export default function CommandCenter() {
+  const navigate = useNavigate();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [filter, setFilter] = useState('');
   const [severityFilter, setSeverityFilter] = useState('');
+  const [activePage, setActivePage] = useState('Command Center');
+
+  const sessionRaw = localStorage.getItem('respondaCare_session');
+  const session = sessionRaw ? JSON.parse(sessionRaw) : null;
+
+  const handleLogout = () => {
+    localStorage.removeItem('respondaCare_session');
+    navigate('/login');
+  };
+
+  const NAV_ITEMS = [
+    { icon: '⊞', label: 'Dashboard',        path: '/admin/dashboard'  },
+    { icon: '⚡', label: 'Command Center',    path: '/admin/dashboard'  },
+    { icon: '👥', label: 'Residents',         path: '/admin/residents'  },
+    { icon: '🗺️', label: 'Dispatch Map',      path: '/admin/map'        },
+    { icon: '📋', label: 'Audit Logs',        path: '/admin/audit-logs' },
+    { icon: '⚙',  label: 'Settings',          path: '/admin/settings'   },
+  ];
 
   const filtered = MOCK_EMERGENCIES.filter((e) => {
     const matchText =
@@ -150,34 +170,38 @@ export default function CommandCenter() {
           <p className="text-[10px] text-[#444653] font-mono mt-0.5 tracking-widest">DISPATCH HQ</p>
         </div>
         <nav className="flex-1 px-2 py-4 space-y-0.5">
-          {[
-            { icon: '⊞', label: 'Dashboard',      active: false },
-            { icon: '⚡', label: 'Command Center', active: true  },
-            { icon: '👥', label: 'Responders',     active: false },
-            { icon: '📋', label: 'Reports',        active: false },
-            { icon: '⚙', label: 'Settings',        active: false },
-          ].map(({ icon, label, active }) => (
-            <button
-              key={label}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm transition-all ${
-                active
-                  ? 'bg-[#1e3fae]/20 text-[#b8c4ff] border border-[#1e3fae]/40'
-                  : 'text-[#8e909f] hover:bg-white/5 hover:text-[#e5e2e1]'
-              }`}
-            >
-              <span>{icon}</span>
-              <span>{label}</span>
-              {label === 'Command Center' && (
-                <span className="ml-auto bg-[#e53935] text-white text-[9px] font-mono px-1.5 py-0.5 rounded-full">
-                  {MOCK_EMERGENCIES.filter(e => e.status === 'PENDING').length}
-                </span>
-              )}
-            </button>
-          ))}
+          {NAV_ITEMS.map(({ icon, label, path }) => {
+            const isActive = label === 'Command Center';
+            return (
+              <button
+                key={label}
+                onClick={() => navigate(path)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded text-sm transition-all ${
+                  isActive
+                    ? 'bg-[#1e3fae]/20 text-[#b8c4ff] border border-[#1e3fae]/40'
+                    : 'text-[#8e909f] hover:bg-white/5 hover:text-[#e5e2e1]'
+                }`}
+              >
+                <span>{icon}</span>
+                <span>{label}</span>
+                {label === 'Command Center' && (
+                  <span className="ml-auto bg-[#e53935] text-white text-[9px] font-mono px-1.5 py-0.5 rounded-full">
+                    {MOCK_EMERGENCIES.filter(e => e.status === 'PENDING').length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </nav>
         <div className="px-4 py-4 border-t border-white/[0.07]">
           <div className="text-[10px] font-mono text-[#444653] tracking-widest">OPERATOR</div>
-          <div className="text-sm text-[#e5e2e1] mt-0.5">Dispatch Admin</div>
+          <div className="text-sm text-[#e5e2e1] mt-0.5">{session?.name || 'Admin'}</div>
+          <button
+            onClick={handleLogout}
+            className="mt-2 text-[10px] font-mono text-[#444653] hover:text-red-400 transition-colors"
+          >
+            Log Out
+          </button>
         </div>
       </aside>
 

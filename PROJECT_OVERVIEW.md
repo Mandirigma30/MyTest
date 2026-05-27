@@ -93,13 +93,19 @@ All patient data handling follows the principles of **Transparency, Legitimate P
 - Integrated high-fidelity cryptographic SVG vector QR code card generator for on-site medical card creation.
 - Direct Paramedic Scanner sync enabling instant mobile QR scanning of the newly enrolled residents.
 
+### Module 4: Resident & Patient Portal *(Complete)*
+- Role-adaptive dashboard with SOS Hero Panic action (hold 3s with active GPS coordinate fallback)
+- Secure QR Card page rendering real-time AES-256-GCM encrypted patient data to ensure compliance with RA 10173 (only decryptable by authorized first responders)
+- Personalized Health Guide dynamically prioritizing articles matching the resident's specific health conditions (e.g. diabetes tips for diabetic residents)
+- Real-time Notifications panel for critical updates and alerts
+
 ---
 
 ## Directory Structure
 
 ```
 RespondaCare/
-├── PROJECT_OVERVIEW.md       ← This file
+├── PROJECT_OVERVIEW.md       ← This file (Overview SOP)
 ├── UPDATE_LOG.md             ← AI session update log
 ├── index.html
 ├── vite.config.js
@@ -117,21 +123,40 @@ RespondaCare/
     │   ├── scanner/
     │   │   ├── QRScanner.jsx
     │   │   └── SAMPLEViewer.jsx
-    │   └── command-center/
-    │       ├── CommandCenter.jsx
-    │       └── AuthKeyModal.jsx
+    │   ├── command-center/
+    │   │   ├── CommandCenter.jsx
+    │   │   └── AuthKeyModal.jsx
+    │   └── layout/
+    │       └── MobileNav.jsx  ← Role-adaptive sticky bottom navigation
+    ├── hooks/
+    │   ├── useGeolocation.js  ← Geolocation hook wrapping navigator.geolocation
+    │   └── useOnlineStatus.js ← Online/offline connection hook
     ├── lib/
-    │   └── supabase.js
+    │   ├── cryptoUtils.js     ← Web Crypto AES-256-GCM encryption/decryption utilities
+    │   ├── pdfExport.js       ← jsPDF clinical handover generator
+    │   └── supabase.js        ← Supabase configuration and initialization client
     └── pages/
-        ├── LoginPage.jsx
-        ├── ScannerPage.jsx
+        ├── LoginPage.jsx       ← Unified authentication screen
+        ├── ScannerPage.jsx     ← Paramedic camera simulator view
+        ├── UIRPage.jsx         ← Unified Incident Report page
+        ├── MapPage.jsx         ← Leaflet GIS incident mapping interface
+        ├── DashboardPage.jsx   ← Dispatcher command center
+        ├── EnrollPage.jsx      ← Barangay Health Worker intake portal
+        ├── ResidentsDirectoryPage.jsx ← Searchable database of enrolled residents
+        ├── AuditLogsPage.jsx   ← Immutable security audit tracking dashboard
+        ├── SettingsPage.jsx    ← Dispatch auth key rotating tool & administration
+        ├── ResidentPortalPage.jsx ← Resident homepage portal
+        ├── SosPage.jsx         ← Resident SOS panic button (3s hold)
+        ├── EducationPage.jsx   ← Tailored medical guides (Personalized Health Guide)
+        ├── NotificationsPage.jsx ← Resident alert feeds
+        └── QRCardPage.jsx      ← Resident AES-256-GCM encrypted health card
 ```
 
 ---
 
 ## Development Conventions
 
-- **Mobile-first**: All UI designed for 375px–430px viewport width (paramedic viewports)
+- **Mobile-first**: All UI designed for 375px–430px viewport width (paramedic/resident viewports)
 - **Offline-first**: Every feature must degrade gracefully without network connectivity
 - **Encrypt before store**: Patient data is **never** written to storage in plaintext
 - **RLS everywhere**: Every Supabase table interaction is gated by Row Level Security policies
@@ -139,4 +164,4 @@ RespondaCare/
 
 ---
 
-*Last updated: 2026-05-25*
+*Last updated: 2026-05-27*
