@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import QRScanner from '../components/scanner/QRScanner';
 import SAMPLEViewer from '../components/scanner/SAMPLEViewer';
 import Button from '../components/common/Button';
-import { ShieldAlert, LogOut, ArrowLeft } from 'lucide-react';
+import MobileNav from '../components/layout/MobileNav';
+import { ShieldAlert, LogOut, ArrowLeft, FileText } from 'lucide-react';
 
 export default function ScannerPage() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function ScannerPage() {
   };
 
   const handleLogout = () => {
-    // Clear credentials locally
+    localStorage.removeItem('respondaCare_session');
     navigate('/login');
   };
 
@@ -48,15 +49,26 @@ export default function ScannerPage() {
             </div>
           </div>
           
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleLogout} 
-            className="text-xs text-[#8e909f] hover:text-[#ffdad6] p-1.5"
-            leftIcon={<LogOut size={13} />}
-          >
-            Logout
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/responder/uir')}
+              className="text-xs text-[#b8c4ff] hover:text-[#e5e2e1] p-1.5"
+              leftIcon={<FileText size={13} />}
+            >
+              UIR
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleLogout} 
+              className="text-xs text-[#8e909f] hover:text-[#ffdad6] p-1.5"
+              leftIcon={<LogOut size={13} />}
+            >
+              Logout
+            </Button>
+          </div>
         </header>
 
         {/* Active Content Area */}
@@ -93,6 +105,7 @@ export default function ScannerPage() {
           </p>
         </footer>
 
+        <MobileNav />
       </div>
     </div>
   );

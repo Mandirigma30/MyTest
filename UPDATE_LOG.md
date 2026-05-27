@@ -24,6 +24,80 @@ What should be done in the next session.
 ---
 
 ---
+### [2026-05-27] — Personalized Health Guides & Encrypted Resident QR Card
+**Status:** Complete
+
+**Components Built / Modified:**
+
+#### NEW Files
+- `src/pages/QRCardPage.jsx` — Secure QR card displaying the resident's profile encrypted via AES-256-GCM using Web Crypto API. Includes a local toggle to let the resident view their own plain text data and a dynamic refresh action.
+
+#### MODIFIED Files
+- `src/pages/EducationPage.jsx` — Personalized health guide engine. Parses the resident's enrolled SAMPLE medical profile conditions (e.g. diabetes, asthma, hypertension, etc.) and prioritizes matching educational guides with a custom feedback banner.
+- `src/App.jsx` — Registered the new `/resident/qr` route in the resident's walled garden mapping.
+- `src/pages/ResidentPortalPage.jsx` — Wired the "My Health QR Card" navigation action to the `/resident/qr` route.
+
+**Summary:**
+Added resident-side encrypted QR card generation and personalized clinical education tailoring. Residents can now view their secure health card and their own health data summary locally, but the QR code payload itself is fully encrypted with AES-256-GCM so only authorized first responders can decrypt it upon a scan. The education hub was rebuilt into a smart, personalized health guide that highlights articles matching the resident's specific medical conditions (like prioritizing diabetes management tips for diabetic residents) instead of offering static, generic first-aid entries.
+
+**Next Logical Step:**
+1. Securely bind unique encryption key derivation to the logged-in resident's security profile.
+2. Wire real-time Supabase health.profiles endpoint to automatically update the local client storage of the resident's SAMPLE schema records.
+3. Conduct end-to-end sandbox scans using the field paramedic client scanning a newly registered BHW resident QR.
+---
+
+---
+### [2026-05-27] — Full Feature Completion: All 17 Feature Areas + RBAC Routing
+**Status:** Complete
+
+**Components Built / Modified:**
+
+#### NEW Files
+- `src/hooks/useGeolocation.js` — Geolocation hook wrapping navigator.geolocation, GPS fallback to Brgy. 45 Pasay City coordinates
+- `src/hooks/useOnlineStatus.js` — Online/offline listener hook using navigator.onLine and event listeners
+- `src/lib/cryptoUtils.js` — AES-256-GCM Web Crypto API utilities: encryptPayload(), decryptPayload(), generateAuthKey()
+- `src/lib/pdfExport.js` — jsPDF clinical handover generator with RA 10173 header, patient vitals, interventions, disposition, and signature blocks
+- `src/components/auth/ProtectedRoute.jsx` — RBAC guard reading session role from localStorage, blocks unauthorized walled-garden access
+- `src/components/layout/MobileNav.jsx` — Role-adaptive sticky bottom navigation for resident and responder mobile views
+- `src/pages/ResidentPortalPage.jsx` — Resident dashboard hub with SOS hero button, QR card link, first aid hub, and notifications
+- `src/pages/SosPage.jsx` — 3-second hold-to-trigger SOS panic with GPS coordinates, category selector, animated ring, and offline/Supabase fallback
+- `src/pages/EducationPage.jsx` — First Aid Hub with 7 offline-cached clinical guides (CPR, choking, fever, asthma, fracture, stroke, obstetric), search and category filters
+- `src/pages/NotificationsPage.jsx` — Notification feed with unread state management and mark-all-read
+- `src/pages/MapPage.jsx` — Leaflet GIS dispatch map with dynamic import, dark CartoDB tiles, severity-colored custom SVG markers, and incident list panel
+- `src/pages/ResidentsDirectoryPage.jsx` — Searchable/filterable residents table with QR enrollment status indicators
+- `src/pages/AuditLogsPage.jsx` — Immutable security audit log viewer with action badge colors, hash integrity column, search and action filter
+- `src/pages/SettingsPage.jsx` — Admin settings: rotating auth key generator (using cryptoUtils), personnel account toggle, system config display
+
+#### MODIFIED Files
+- `src/App.jsx` — Complete rewrite with 3 walled gardens: `/responder/*`, `/admin/*`, `/resident/*` routes gated by ProtectedRoute
+- `src/components/auth/LoginScreen.jsx` — Role gateway selector (Official vs Resident), SANDBOX_USERS map with 3 demo accounts, detectedRole state, role-based post-auth routing, residents bypass MFA
+- `src/components/bhw/BhwEnrollment.jsx` — Replaced fake SVG QR with real `qrcode.react` QRCodeSVG encoding full JSON patient payload
+- `src/components/uir/UnifiedIncidentReport.jsx` — Replaced alert() PDF placeholder with real jsPDF clinical handover via pdfExport.js
+- `src/components/command-center/CommandCenter.jsx` — All sidebar nav buttons wired to navigate(), admin logout clears session, NAV_ITEMS array with all 6 admin routes
+- `src/pages/ScannerPage.jsx` — Clears session on logout, adds UIR quick-link button, adds MobileNav
+- `src/pages/UIRPage.jsx` — Clears session on logout, adds MobileNav
+
+#### Packages Installed
+- `jspdf` + `jspdf-autotable` — Clinical PDF generation
+- `qrcode.react` — Real QR code encoding
+- `leaflet` + `react-leaflet` (with --legacy-peer-deps for React 18 compatibility)
+
+**Summary:**
+Completed all 17 feature areas across 4 user roles from the master blueprint. The app now has complete RBAC walled gardens, a functional SOS panic trigger with GPS, a full first aid knowledge hub, a GIS dispatch map with Leaflet, real QR code generation replacing the mock SVG, real PDF handover export replacing the alert() placeholder, a searchable residents directory, an immutable audit log viewer, an admin settings panel with rotating auth key generator, and a mobile navigation shell. All demo logins are documented inline on the login screen.
+
+**Sandbox Credentials:**
+- Admin: `admin@respondacare.ph` / `password123` → OTP: `123456` → `/admin/dashboard`
+- Responder: `responder@respondacare.ph` / `password123` → OTP: `123456` → `/responder/scanner`
+- Resident: `resident@respondacare.ph` / `password123` → `/resident/portal` (no MFA required for residents)
+
+**Next Logical Step:**
+1. Connect VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in `.env` to activate live Supabase sync
+2. Expose the `security`, `core`, `health`, `emergency` schemas in the Supabase API Dashboard
+3. Run the `enroll_resident` RPC SQL function in Supabase for atomic multi-table enrollment writes
+4. Enable Service Worker / PWA manifest for offline caching and install-to-homescreen support
+---
+
+---
 ### [2026-05-26] — Unified Incident Report (UIR) Module
 **Status:** Complete
 

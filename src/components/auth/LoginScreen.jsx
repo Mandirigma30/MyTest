@@ -4,12 +4,23 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Card from '../common/Card';
 import { supabase } from '../../lib/supabase';
-import { ShieldCheck, Mail, Lock, KeyRound, ArrowRight, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, ArrowRight, ArrowLeft, Users, Stethoscope } from 'lucide-react';
+
+// Sandbox credential map: email → role
+const SANDBOX_USERS = {
+  'admin@respondacare.ph':     { role: 'admin',     name: 'Dispatch Admin' },
+  'responder@respondacare.ph': { role: 'responder', name: 'Medic Unit Alpha' },
+  'resident@respondacare.ph':  { role: 'resident',  name: 'Juan Dela Cruz' },
+};
+
+const SANDBOX_PASSWORD = 'password123';
+const SANDBOX_OTP = '123456';
 
 export default function LoginScreen() {
   const navigate = useNavigate();
   
   // State variables
+  const [loginMode, setLoginMode] = useState('official'); // 'official' | 'resident'
   const [step, setStep] = useState(1); // 1: Credentials, 2: MFA Token
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,6 +29,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [detectedRole, setDetectedRole] = useState(null);
 
   // References for OTP fields focus management
   const otpRefs = useRef([]);
@@ -40,19 +52,13 @@ export default function LoginScreen() {
     }
 
     setLoading(true);
-    // Artificially wait to simulate robust network query and security analysis
     await new Promise((resolve) => setTimeout(resolve, 800));
 
     try {
-      // Check credential validation (handles real/sandbox modes)
-      const isSandboxUser = (
-        (email.trim() === 'admin@respondacare.ph' || email.trim() === 'responder@respondacare.ph') &&
-        password === 'password123'
-      );
-      
+      const sandboxUser = SANDBOX_USERS[email.trim()];
+      const isSandboxUser = sandboxUser && password === SANDBOX_PASSWORD;
       const isRealUser = !supabase.supabaseUrl.includes('placeholder-project-url');
 
-      // Attempt connection to Supabase if configured AND NOT using a sandbox user
       if (isRealUser && !isSandboxUser) {
         const { data, error: sbError } = await supabase.auth.signInWithPassword({
           email: email.trim(),
@@ -62,9 +68,20 @@ export default function LoginScreen() {
       }
 
       if (isSandboxUser || isRealUser) {
-        setStep(2); // Proceed to Multi-factor authentication input
+        // Store detected role for MFA routing step
+        const role = sandboxUser?.role || (loginMode === 'resident' ? 'resident' : 'admin');
+        setDetectedRole(role);
+        // Residents bypass MFA — send directly
+        if (role === 'resident') {
+          localStorage.setItem('respondaCare_session', JSON.stringify({ role: 'resident', email: email.trim(), name: sandboxUser?.name || email }));
+          setSuccess(true);
+          await new Promise((r) => setTimeout(r, 600));
+          navigate('/resident/portal');
+        } else {
+          setStep(2); // Proceed to MFA
+        }
       } else {
-        setError('Invalid Responder credentials. Try: admin@respondacare.ph / password123');
+        setError('Invalid credentials. Sandbox — admin@respondacare.ph | responder@respondacare.ph | resident@respondacare.ph / password123');
       }
     } catch (err) {
       setError(err.message || 'Authentication error. Please check credentials.');
@@ -109,22 +126,25 @@ export default function LoginScreen() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     try {
-      const isSandboxVerify = token === '123456';
-      // In production, we would perform: supabase.auth.mfa.verify(...)
+      const isSandboxVerify = token === SANDBOX_OTP;
       
       if (isSandboxVerify || !supabase.supabaseUrl.includes('placeholder-project-url')) {
+        // Save session with role
+        const sandboxUser = SANDBOX_USERS[email.trim()];
+        const role = detectedRole || sandboxUser?.role || 'responder';
+        localStorage.setItem('respondaCare_session', JSON.stringify({
+          role,
+          email: email.trim(),
+          name: sandboxUser?.name || email,
+        }));
+
         setSuccess(true);
         await new Promise((resolve) => setTimeout(resolve, 600));
-        
-        // Audit log action locally or via Supabase
-        console.log(`[AUDIT] Authorized login session for ${email}`);
 
-        // Route dispatcher vs field responder
-        if (email.trim() === 'admin@respondacare.ph') {
-          navigate('/dashboard');
-        } else {
-          navigate('/scanner');
-        }
+        // Route by role
+        if (role === 'admin') navigate('/admin/dashboard');
+        else if (role === 'responder') navigate('/responder/scanner');
+        else navigate('/resident/portal');
       } else {
         setError('Invalid security token. Use sandbox code: 123456');
       }
@@ -144,8 +164,34 @@ export default function LoginScreen() {
           </div>
           <h2 className="text-xl font-bold tracking-tight text-[#e5e2e1]">RespondaCare</h2>
           <p className="text-xs text-[#8e909f] font-mono mt-1 uppercase tracking-widest">
-            {step === 1 ? 'Step 1: Primary Authentication' : 'Step 2: Security Verification'}
+            {step === 1 ? 'Barangay 45 Emergency Response System' : 'Step 2: Security Verification'}
           </p>
+
+          {/* Role Gateway Selector */}
+          {step === 1 && (
+            <div className="flex w-full mt-4 bg-[#111111] border border-white/[0.07] rounded p-1 gap-1">
+              <button
+                type="button"
+                onClick={() => { setLoginMode('official'); setError(''); }}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 rounded text-xs font-mono font-bold transition-colors ${
+                  loginMode === 'official' ? 'bg-[#1e3fae] text-white' : 'text-[#8e909f] hover:text-[#c5c5d5]'
+                }`}
+              >
+                <Stethoscope size={13} />
+                Official Login
+              </button>
+              <button
+                type="button"
+                onClick={() => { setLoginMode('resident'); setError(''); }}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 rounded text-xs font-mono font-bold transition-colors ${
+                  loginMode === 'resident' ? 'bg-[#1e3fae] text-white' : 'text-[#8e909f] hover:text-[#c5c5d5]'
+                }`}
+              >
+                <Users size={13} />
+                Resident Portal
+              </button>
+            </div>
+          )}
         </Card.Header>
 
         <Card.Body className="py-4">
@@ -200,8 +246,13 @@ export default function LoginScreen() {
                 </Button>
               </div>
 
-              <div className="text-[10px] text-center text-[#444653] font-mono border-t border-white/[0.05] pt-3">
-                RA 10173 Philippine Data Privacy Act Compliant Encryption
+              <div className="text-[10px] text-center text-[#444653] font-mono border-t border-white/[0.05] pt-3 space-y-0.5">
+                <div>RA 10173 Philippine Data Privacy Act Compliant</div>
+                {loginMode === 'official' ? (
+                  <div className="text-[#444653]">admin@ | responder@ / password123 → OTP: 123456</div>
+                ) : (
+                  <div className="text-[#444653]">resident@respondacare.ph / password123</div>
+                )}
               </div>
             </form>
           ) : (

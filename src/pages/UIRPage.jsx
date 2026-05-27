@@ -8,6 +8,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import UnifiedIncidentReport from '../components/uir/UnifiedIncidentReport';
 import Button from '../components/common/Button';
+import MobileNav from '../components/layout/MobileNav';
 import { ShieldAlert, LogOut, ArrowLeft } from 'lucide-react';
 
 export default function UIRPage() {
@@ -38,7 +39,7 @@ export default function UIRPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate('/login')}
+            onClick={() => { localStorage.removeItem('respondaCare_session'); navigate('/login'); }}
             className="text-xs text-[#8e909f] hover:text-[#ffdad6] p-1.5"
             leftIcon={<LogOut size={13} />}
           >
@@ -62,6 +63,7 @@ export default function UIRPage() {
           </p>
         </footer>
 
+        <MobileNav />
       </div>
     </div>
   );

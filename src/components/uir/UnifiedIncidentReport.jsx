@@ -11,6 +11,7 @@ import Button from '../common/Button';
 import Input from '../common/Input';
 import Select from '../common/Select';
 import Card from '../common/Card';
+import { generateHandoverPDF } from '../../lib/pdfExport';
 import {
   ChevronDown,
   ChevronUp,
@@ -239,11 +240,61 @@ export default function UnifiedIncidentReport() {
   }, []);
 
   const handleExportPdf = useCallback(() => {
-    // Placeholder – PDF generation via jsPDF or server-side renderer
-    alert(
-      'Export PDF is a placeholder.\n\nIn production, this will generate a signed clinical PDF using jsPDF with RA 10173 headers and encrypted metadata stamps.'
-    );
-  }, []);
+    generateHandoverPDF({
+      incidentDate,
+      incidentTime,
+      arrivalTime,
+      clearTime,
+      incidentLocation,
+      barangay,
+      responderId,
+      unitCallSign,
+      natureOfCall,
+      incidentType,
+      severityScore,
+      responseOutcome,
+      patientName,
+      patientAge,
+      patientSex,
+      chiefComplaint,
+      painScale,
+      levelOfConsciousness,
+      airwayStatus,
+      breathingStatus,
+      circulationStatus,
+      skinCondition,
+      pupilResponse,
+      bloodPressure,
+      pulseRate,
+      respiratoryRate,
+      spo2,
+      temperature,
+      bloodGlucose,
+      gcsTotal,
+      interventionsPerformed,
+      medicationsGiven,
+      ivAccess,
+      oxygenTherapy,
+      immobilization,
+      clinicalNarrative,
+      patientDisposition,
+      hospitalName,
+      receivingProvider,
+      transportMode,
+      departureTime,
+      arrivalAtFacility,
+      turnoverNotes,
+    });
+  }, [
+    incidentDate, incidentTime, arrivalTime, clearTime, incidentLocation, barangay,
+    responderId, unitCallSign, natureOfCall, incidentType, severityScore, responseOutcome,
+    patientName, patientAge, patientSex, chiefComplaint, painScale, levelOfConsciousness,
+    airwayStatus, breathingStatus, circulationStatus, skinCondition, pupilResponse,
+    bloodPressure, pulseRate, respiratoryRate, spo2, temperature, bloodGlucose, gcsTotal,
+    interventionsPerformed, medicationsGiven, ivAccess, oxygenTherapy, immobilization,
+    clinicalNarrative, patientDisposition, hospitalName, receivingProvider, transportMode,
+    departureTime, arrivalAtFacility, turnoverNotes,
+  ]);
 
   // ═══════════════════════════════════════════════════════════════════
   // POST-SUBMISSION VIEW

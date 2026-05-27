@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import Card from '../common/Card';
 import Input from '../common/Input';
 import Select from '../common/Select';
@@ -241,45 +242,16 @@ export default function BhwEnrollment() {
               GENERATE CRYPTOGRAPHIC KEY
             </span>
 
-            {/* Glowing QR Viewport Frame */}
+            {/* REAL QR Code via qrcode.react */}
             <div className="relative p-4 bg-white rounded-lg shadow-xl shadow-black/40 border border-white/10 mb-5 flex items-center justify-center">
-              {/* Simulated QR Code generated as an SVG vector matrix */}
-              <svg className="w-40 h-40 text-black" viewBox="0 0 100 100" fill="currentColor">
-                {/* Standard alignment squares */}
-                <rect x="5" y="5" width="25" height="25" />
-                <rect x="10" y="10" width="15" height="15" fill="white" />
-                <rect x="13" y="13" width="9" height="9" />
-
-                <rect x="70" y="5" width="25" height="25" />
-                <rect x="75" y="10" width="15" height="15" fill="white" />
-                <rect x="78" y="13" width="9" height="9" />
-
-                <rect x="5" y="70" width="25" height="25" />
-                <rect x="10" y="75" width="15" height="15" fill="white" />
-                <rect x="13" y="78" width="9" height="9" />
-
-                {/* Random bitmatrix representing AES simulated values */}
-                <rect x="35" y="5" width="10" height="5" />
-                <rect x="50" y="5" width="5" height="15" />
-                <rect x="60" y="10" width="5" height="5" />
-                
-                <rect x="35" y="20" width="25" height="5" />
-                <rect x="45" y="25" width="10" height="10" />
-                <rect x="5" y="35" width="15" height="5" />
-                <rect x="25" y="35" width="5" height="25" />
-
-                <rect x="35" y="45" width="15" height="15" />
-                <rect x="40" y="50" width="5" height="5" fill="white" />
-
-                <rect x="60" y="35" width="25" height="5" />
-                <rect x="75" y="45" width="20" height="10" />
-                <rect x="55" y="55" width="10" height="25" />
-                
-                <rect x="35" y="70" width="15" height="5" />
-                <rect x="45" y="80" width="20" height="15" />
-                <rect x="70" y="70" width="15" height="15" />
-                <rect x="75" y="75" width="5" height="5" fill="white" />
-              </svg>
+              <QRCodeSVG
+                value={JSON.stringify(generatedQrPayload)}
+                size={160}
+                bgColor="#ffffff"
+                fgColor="#000000"
+                level="H"
+                includeMargin={false}
+              />
             </div>
 
             <div className="text-center w-full space-y-1">
