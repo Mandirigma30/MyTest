@@ -246,15 +246,40 @@ export default function LoginScreen() {
                 </Button>
               </div>
 
+
               <div className="text-[10px] text-center text-[#444653] font-mono border-t border-white/[0.05] pt-3 space-y-0.5">
                 <div>RA 10173 Philippine Data Privacy Act Compliant</div>
                 {loginMode === 'official' ? (
-                  <div className="text-[#444653]">admin@ | responder@ / password123 → OTP: 123456</div>
+                  <>
+                    <div className="text-[#444653]">admin@ | responder@ / password123 → OTP: 123456</div>
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => navigate('/register/responder')}
+                        className="text-[#b8c4ff] hover:text-white underline underline-offset-2 transition-colors"
+                      >
+                        New first responder? Apply here →
+                      </button>
+                    </div>
+                  </>
                 ) : (
-                  <div className="text-[#444653]">resident@respondacare.ph / password123</div>
+                  <>
+                    <div className="text-[#444653]">resident@respondacare.ph / password123</div>
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => navigate('/register/resident')}
+                        className="text-[#b8c4ff] hover:text-white underline underline-offset-2 transition-colors"
+                      >
+                        New resident? Register here →
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
+
             </form>
+
           ) : (
             <form onSubmit={handleMfaSubmit} className="space-y-5">
               <div className="text-center">

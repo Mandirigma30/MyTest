@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Key, Users, Database, Shield, Copy, CheckCircle2, Clock, ToggleLeft, ToggleRight } from 'lucide-react';
+import { ArrowLeft, Key, Users, Database, Shield, Copy, CheckCircle2, Clock, ToggleLeft, ToggleRight, UserPlus } from 'lucide-react';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
@@ -19,7 +19,26 @@ export default function SettingsPage() {
   const [keyExpiry, setKeyExpiry] = useState('8');
   const [responderTarget, setResponderTarget] = useState('');
   const [copied, setCopied] = useState(false);
-  const [users, setUsers] = useState(MOCK_USERS);
+  const [users, setUsers] = useState(() => {
+    // Merge seeded mock users with any self-registered pending responders
+    const pending = JSON.parse(localStorage.getItem('respondaCare_pendingResponders') || '[]');
+    const pendingMapped = pending.map(p => ({
+      id:     p.id,
+      name:   p.name,
+      email:  p.email,
+      role:   'responder',
+      active: p.active ?? false,
+      // Extra fields carried for display
+      licenseNumber: p.licenseNumber,
+      emtLevel:      p.emtLevel,
+      rescueUnit:    p.rescueUnit,
+      selfRegistered: true,
+    }));
+    // Avoid duplicates by email
+    const existingEmails = new Set(MOCK_USERS.map(u => u.email));
+    const newPending = pendingMapped.filter(p => !existingEmails.has(p.email));
+    return [...MOCK_USERS, ...newPending];
+  });
 
   const handleGenerateKey = () => {
     const key = generateAuthKey();
@@ -35,7 +54,17 @@ export default function SettingsPage() {
   };
 
   const toggleUserStatus = (id) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, active: !u.active } : u));
+    setUsers(prev => {
+      const updated = prev.map(u => u.id === id ? { ...u, active: !u.active } : u);
+      // Sync back to localStorage for self-registered responders
+      const pending = JSON.parse(localStorage.getItem('respondaCare_pendingResponders') || '[]');
+      const syncedPending = pending.map(p => {
+        const match = updated.find(u => u.id === p.id);
+        return match ? { ...p, active: match.active, is_active: match.active, status: match.active ? 'active' : 'pending_approval' } : p;
+      });
+      localStorage.setItem('respondaCare_pendingResponders', JSON.stringify(syncedPending));
+      return updated;
+    });
   };
 
   return (
@@ -139,9 +168,18 @@ export default function SettingsPage() {
         {/* User Account Management */}
         <Card>
           <Card.Header className="border-b border-white/[0.05] pb-3">
-            <div className="flex items-center gap-2">
-              <Users size={16} className="text-[#b8c4ff]" />
-              <span className="text-sm font-bold text-[#e5e2e1]">Personnel Account Management</span>
+            <div className="flex items-center justify-between gap-2 w-full">
+              <div className="flex items-center gap-2">
+                <Users size={16} className="text-[#b8c4ff]" />
+                <span className="text-sm font-bold text-[#e5e2e1]">Personnel Account Management</span>
+              </div>
+              <button
+                onClick={() => navigate('/register/responder')}
+                className="flex items-center gap-1.5 text-[10px] font-mono text-[#8e909f] hover:text-[#b8c4ff] border border-[#444653] hover:border-[#1e3fae]/60 px-2 py-1 rounded transition-colors"
+              >
+                <UserPlus size={11} />
+                Register Responder
+              </button>
             </div>
           </Card.Header>
           <Card.Body className="pt-4">
@@ -153,13 +191,23 @@ export default function SettingsPage() {
                 >
                   <div className="flex items-center gap-3">
                     <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${
-                      user.active ? 'bg-[#1e3fae]/20 text-[#b8c4ff]' : 'bg-[#171717] text-[#444653]'
+                      user.active ? 'bg-[#1e3fae]/20 text-[#b8c4ff]' : 'bg-amber-500/10 text-amber-400'
                     }`}>
                       {user.name.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#e5e2e1]">{user.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-[#e5e2e1]">{user.name}</p>
+                        {user.selfRegistered && !user.active && (
+                          <span className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 uppercase tracking-wider">
+                            Pending
+                          </span>
+                        )}
+                      </div>
                       <p className="text-[10px] font-mono text-[#444653]">{user.email}</p>
+                      {user.licenseNumber && (
+                        <p className="text-[9px] font-mono text-[#444653] mt-0.5">License: {user.licenseNumber} · {user.emtLevel}</p>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
