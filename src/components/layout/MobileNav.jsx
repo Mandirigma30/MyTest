@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { QrCode, FileText, Map, Bell, User, ShieldCheck, BookOpen, Siren } from 'lucide-react';
+import { QrCode, FileText, Map, Bell, User, BookOpen, Siren, History } from 'lucide-react';
 
 /**
  * MobileNav.jsx — Sticky bottom navigation bar for mobile views
@@ -15,10 +15,10 @@ export default function MobileNav() {
   const role = session?.role;
 
   const responderTabs = [
-    { icon: QrCode, label: 'Scanner', path: '/responder/scanner' },
-    { icon: FileText, label: 'UIR Form', path: '/responder/uir' },
-    { icon: Map, label: 'Map', path: '/responder/map' },
-    { icon: User, label: 'Profile', path: '/responder/profile' },
+    { icon: QrCode,   label: 'Scanner', path: '/responder/scanner'  },
+    { icon: FileText, label: 'UIR',     path: '/responder/uir'      },
+    { icon: History,  label: 'History', path: '/responder/history'  },
+    { icon: User,     label: 'Profile', path: '/responder/profile'  },
   ];
 
   const residentTabs = [

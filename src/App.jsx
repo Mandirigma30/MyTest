@@ -19,6 +19,8 @@ import ReportsPage from './pages/ReportsPage';
 import ScannerPage from './pages/ScannerPage';
 import UIRPage from './pages/UIRPage';
 import MapPage from './pages/MapPage';
+import ResponseHistoryPage from './pages/ResponseHistoryPage';
+import ResponderProfilePage from './pages/ResponderProfilePage';
 
 // Resident pages
 import ResidentPortalPage from './pages/ResidentPortalPage';
@@ -44,6 +46,8 @@ export default function App() {
           <Route path="/responder/scanner" element={<ScannerPage />} />
           <Route path="/responder/uir"     element={<UIRPage />} />
           <Route path="/responder/map"     element={<MapPage />} />
+          <Route path="/responder/history" element={<ResponseHistoryPage />} />
+          <Route path="/responder/profile" element={<ResponderProfilePage />} />
           {/* Legacy redirects */}
           <Route path="/scanner"  element={<Navigate to="/responder/scanner" replace />} />
         </Route>
