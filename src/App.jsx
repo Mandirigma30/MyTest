@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 // Auth
 import LoginPage from './pages/LoginPage';
+import RegisterResidentPage from './pages/RegisterResidentPage';
+import RegisterResponderPage from './pages/RegisterResponderPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Admin pages
@@ -11,6 +13,7 @@ import EnrollPage from './pages/EnrollPage';
 import ResidentsDirectoryPage from './pages/ResidentsDirectoryPage';
 import AuditLogsPage from './pages/AuditLogsPage';
 import SettingsPage from './pages/SettingsPage';
+import ReportsPage from './pages/ReportsPage';
 
 // First Responder pages
 import ScannerPage from './pages/ScannerPage';
@@ -30,6 +33,8 @@ export default function App() {
       <Routes>
         {/* ── Public ── */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register/resident"  element={<RegisterResidentPage />} />
+        <Route path="/register/responder" element={<RegisterResponderPage />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
 
         {/* ══════════════════════════════════════════
@@ -53,6 +58,7 @@ export default function App() {
           <Route path="/admin/audit-logs" element={<AuditLogsPage />} />
           <Route path="/admin/settings"   element={<SettingsPage />} />
           <Route path="/admin/map"        element={<MapPage />} />
+          <Route path="/admin/reports"    element={<ReportsPage />} />
           {/* Legacy redirects */}
           <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/enroll"    element={<Navigate to="/admin/enrollment" replace />} />

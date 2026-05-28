@@ -138,12 +138,14 @@ export default function CommandCenter() {
 
   const NAV_ITEMS = [
     { icon: '⊞', label: 'Dashboard',        path: '/admin/dashboard'  },
-    { icon: '⚡', label: 'Command Center',    path: '/admin/dashboard'  },
-    { icon: '👥', label: 'Residents',         path: '/admin/residents'  },
-    { icon: '🗺️', label: 'Dispatch Map',      path: '/admin/map'        },
-    { icon: '📋', label: 'Audit Logs',        path: '/admin/audit-logs' },
-    { icon: '⚙',  label: 'Settings',          path: '/admin/settings'   },
+    { icon: '⚡', label: 'Command Center',   path: '/admin/dashboard'  },
+    { icon: '👥', label: 'Residents',        path: '/admin/residents'  },
+    { icon: '🗺️', label: 'Dispatch Map',     path: '/admin/map'        },
+    { icon: '📊', label: 'Reports',          path: '/admin/reports'    },
+    { icon: '📋', label: 'Audit Logs',       path: '/admin/audit-logs' },
+    { icon: '⚙',  label: 'Settings',         path: '/admin/settings'   },
   ];
+
 
   const filtered = MOCK_EMERGENCIES.filter((e) => {
     const matchText =
